@@ -1,0 +1,43 @@
+unit Unit1;
+
+interface
+
+uses
+  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs;
+
+type
+  TForm1 = class(TForm)
+  private
+    procedure EnableStandBy(const AEnabled: Boolean);
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.fmx}
+
+procedure TForm1.EnableStandBy(const AEnabled: Boolean);
+{$IFDEF IOS}
+var
+  UIApp : UIApplication;
+{$ENDIF}
+begin
+  {$IFDEF ANDROID}
+    if AEnabled
+    then Androidapi.JNI.PowerManager.ReleaseWakeLock //Ativa o descanso de tela
+    else Androidapi.JNI.PowerManager.AcquireWakeLock;//Desativa o descanso de tela
+  {$ENDIF}
+
+  {$IFDEF IOS}
+    UIApp := TUIApplication.Wrap(TUIApplication.OCClass.sharedApplication);
+    UIApp.setIdleTimerDisabled(not AEnabled);
+  {$ENDIF}
+end;
+
+end.
